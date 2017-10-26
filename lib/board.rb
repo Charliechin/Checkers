@@ -20,19 +20,20 @@ class Board
     @board
 
   end
-
-
-  def initial_state
+  # color_chosen ={ "r","b"}
+  def initial_state(color_chosen)
     #make private
     (0..3).each do |row|
-      (0..3).each do |cell|
-        binding.pry
-        @board[row][cell] = Square.new(cell,row)
+      (0..2).each do |cell|
+        if cell.even? && row.even? || cell.odd? && row.odd?
+          @board[row][cell] = Piece.new(cell,row,color_chosen)
+        else
+          # empty
+          @board[row][cell] = Square.new(cell,row,"x")
+        end
       end
     end
-
     @board
-
   end
 
   def get_row(row_number)

@@ -48,6 +48,12 @@ class Square
     set_content(new_content)
   end
 
+  def to_s
+    #change depending @color
+    puts "\u{25A3}"
+    # black
+    puts "\u{25A2}"
+  end
   def get_history
   end
 

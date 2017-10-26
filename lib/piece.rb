@@ -32,7 +32,6 @@ class Piece
   end
 
   def to_s
-    binding.pry
     if @color == 'r'
       puts "\u{1F534}"
     else
