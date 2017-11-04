@@ -8,36 +8,22 @@ class Board
 
     @board = Array.new(4) { Array.new(4) }
     initialize_new_board
+    initial_state('r')
   end
-
-
-
-  # color_chosen ={ "r","b"}
-  def initial_state(color_chosen)
-    #make private
-    (0..3).each do |row|
-      (0..2).each do |cell|
-        if cell.even? && row.even? || cell.odd? && row.odd?
-          @board[row][cell].content = Piece.new(color_chosen)
-        end
-      end
-    end
-    @board
-  end
-
-
-
 
   def print_current_state
 
     #YOU MAY HAVE TO CHANGE THIS, AS YOU ARE ITERATING SOBRE UN CUARTO DEL TABLERO
+    puts "    0   1   2   3"
+    puts "   --------------- "
     @board.each_with_index do |row,i|
+      print i
+      print ": "
       row.each_with_index do |column,j|
-        print " "
         if @board[i][j].is_empty?
           print "   ".colorize(:background => column.bg_color)
         else
-          print " X "
+          print " \u{1F534} ".colorize(:background => column.bg_color)
         end
         print " "
       end
@@ -47,6 +33,32 @@ class Board
     nil
   end
 
+  def select_piece(row,column)
+    if @board[row][column].is_empty?
+      puts "not a piece"
+      false
+    else
+      puts "Piece[#{row}][#{column}] chosen"
+      true
+    end
+  end
+
+  def move_piece(from={},to={})
+    #each argument must be a hash with values :row, :column
+    empty_space = @board[ to[:row] ][ to[:column] ].is_empty?
+    piece = self.select_piece(from[:row], from[:column])
+
+    if piece && empty_space
+      from         = @board[ from[:row] ][ from[:column] ]
+      to           = @board[   to[:row] ][   to[:column] ]
+      temp_content = from.content
+      from.content = to.content
+      to.content   = temp_content
+      self.print_current_state
+    else
+      puts "nah"
+    end
+  end
   private
   def initialize_new_board
     # This method will be called everytime a Board instance is generated
@@ -56,6 +68,16 @@ class Board
           @board[i][j] = Square.new(nil,:black)
         else
           @board[i][j] = Square.new(nil,:white)
+        end
+      end
+    end
+    @board
+  end
+  def initial_state(color_chosen)
+    (0..3).each do |row|
+      (0..2).each do |cell|
+        if cell.even? && row.even? || cell.odd? && row.odd?
+          @board[row][cell].content = Piece.new(color_chosen)
         end
       end
     end
