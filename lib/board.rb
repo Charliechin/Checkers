@@ -45,10 +45,11 @@ class Board
 
   def move_piece(from={},to={})
     #each argument must be a hash with values :row, :column
+    # xx.move_piece({row:0,column:0},{row:2,column:3})
+
     empty_space = @board[ to[:row] ][ to[:column] ].is_empty?
     piece = self.select_piece(from[:row], from[:column])
-
-    if piece && empty_space
+    if piece && empty_space && is_valid_move?(from,to)
       from         = @board[ from[:row] ][ from[:column] ]
       to           = @board[   to[:row] ][   to[:column] ]
       temp_content = from.content
@@ -72,6 +73,14 @@ class Board
       end
     end
     @board
+  end
+  def is_valid_move?(from, to)
+   # TODO: check if piece is king 
+    if to[:column] > from[:column] && to[:row] != from[:row]
+      true
+    else
+      false
+    end
   end
   def initial_state(color_chosen)
     (0..3).each do |row|
