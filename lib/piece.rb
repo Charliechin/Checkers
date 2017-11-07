@@ -34,7 +34,7 @@ class Piece
   #  end
 
   def to_s
-    if @color == 'r'
+    if @color == :red
       puts "\u{1F534}"
     else
       puts "\u{1F535}"
