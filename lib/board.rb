@@ -59,7 +59,7 @@ class Board
     case piece.is_king?
     when false && piece.color == :red
       #from left to right of the board
-      can_move_up(piece_row,piece_col, piece.color)
+      can_move_down(piece_row,piece_col, piece.color)
       #when true
       print "\u{2714} ".colorize(:light_green)
       print "Moving piece".colorize(:green)
@@ -105,6 +105,40 @@ class Board
       end
     end
   end
+ 
+
+
+  def can_move_down(pos_row,pos_col, piece_color)
+    piece_coords = {row: pos_row, column: pos_col}
+    #up   = {row: piece_coords[:row] - 1,column: piece_coords[:column] + 1}
+    down = {row: piece_coords[:row] + 1,column: piece_coords[:column] + 1}
+    case piece_color
+    when :red
+      #if the piece is in the bottom row and tries to move further down
+      if down[:row] > @total_rows-1
+        print "\u{2716} ".colorize(:light_red)
+        puts "Movement out of bounds".colorize(:red)
+        self.print_current_state
+        return nil
+
+      elsif @board[down[:row]][down[:column]].is_empty?
+        to_coords = {row: down[:row], column: down[:column]}
+        #MOVE PIECE HERE, EVERYTHING HAS BEEN CHECKED. METHOD THAT JUST MOVES AROUND A PIECE
+        puts "make User choose here if he wants to move down"
+        #print here the board with options highlighted
+        sleep 2
+        movement(piece_coords, to_coords)
+      else
+        print "\u{2716} ".colorize(:light_red)
+        puts "square is not free".colorize(:red)
+        return nil
+      end
+    end
+  end
+
+
+
+
 
   def movement(from={},to={})
     #each argument must be a hash with values :row, :column
