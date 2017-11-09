@@ -10,6 +10,7 @@ class Board
     @board = Array.new(@total_rows) { Array.new(@total_columns) }
     initialize_new_board
     initial_state(:red)
+    binding.pry
   end
 
   def print_current_state
@@ -59,7 +60,8 @@ class Board
     case piece.is_king?
     when false && piece.color == :red
       #from left to right of the board
-      can_move_down(piece_row,piece_col, piece.color)
+      moving_up   = can_move_up(piece_row, piece_col, piece.color)
+      moving_down = can_move_down(piece_row,piece_col, piece.color)
       #when true
       print "\u{2714} ".colorize(:light_green)
       print "Moving piece".colorize(:green)
@@ -78,6 +80,7 @@ class Board
   end
 
   private
+  #Movement stuff
   def can_move_up(pos_row,pos_col, piece_color)
     piece_coords = {row: pos_row, column: pos_col}
     up   = {row: piece_coords[:row] - 1,column: piece_coords[:column] + 1}
@@ -89,7 +92,7 @@ class Board
         print "\u{2716} ".colorize(:light_red)
         puts "Movement out of bounds".colorize(:red)
         self.print_current_state
-        return nil
+        return false
 
       elsif @board[up[:row]][up[:column]].is_empty?
         to_coords = {row: up[:row], column: up[:column]}
@@ -97,11 +100,12 @@ class Board
         puts "make User choose here if he wants to move up"
         #print here the board with options highlighted
         sleep 2
-        movement(piece_coords, to_coords)
+        #movement(piece_coords, to_coords)
+        return true
       else
         print "\u{2716} ".colorize(:light_red)
         puts "square is not free".colorize(:red)
-        return nil
+        return false
       end
     end
   end
@@ -119,7 +123,7 @@ class Board
         print "\u{2716} ".colorize(:light_red)
         puts "Movement out of bounds".colorize(:red)
         self.print_current_state
-        return nil
+        return false
 
       elsif @board[down[:row]][down[:column]].is_empty?
         to_coords = {row: down[:row], column: down[:column]}
@@ -127,23 +131,42 @@ class Board
         puts "make User choose here if he wants to move down"
         #print here the board with options highlighted
         sleep 2
-        movement(piece_coords, to_coords)
+        #movement(piece_coords, to_coords)
+        return true
       else
         print "\u{2716} ".colorize(:light_red)
         puts "square is not free".colorize(:red)
-        return nil
+        return false
       end
     end
   end
 
-
-
-
+  def available_moves(up,down)
+    #Prompt the user where to move
+    prompt = "move_to > "
+    puts "--- Where do you want to move to? ---"
+    if up && down
+    puts "up or down"
+    print prompt
+    end
+    while user_input = gets.chomp # loop while getting user input
+      case user_input
+      when "up"
+        puts "Moving up"
+        break # make sure to break so you don't ask again
+      when "2"
+        puts "Second response"
+        break # and again
+      else
+        puts "Please select either 1 or 2"
+        print prompt # print the prompt, so the user knows to re-enter input
+      end
+    end
+  end
 
   def movement(from={},to={})
     #each argument must be a hash with values :row, :column
     # xx.move_piece({row:0,column:0},{row:2,column:3})
-    #binding.pry
     #piece = @board[ from[:row] ][ from[:column] ].content
 
     from         = @board[ from[:row] ][ from[:column] ]
@@ -153,7 +176,7 @@ class Board
     to.content   = temp_content
     #self.print_current_state
   end
-
+  #!Movement stuff
 
 
   def initialize_new_board
