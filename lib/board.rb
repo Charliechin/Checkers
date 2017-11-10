@@ -14,7 +14,6 @@ class Board
 
   def print_current_state
 
-    #YOU MAY HAVE TO CHANGE THIS, AS YOU ARE ITERATING SOBRE UN CUARTO DEL TABLERO
     puts "    0    1    2   3   4   5    6    7"
     puts "   ----------------------------------"
     @board.each_with_index do |row,i|
@@ -22,7 +21,7 @@ class Board
       print ": "
       row.each_with_index do |column,j|
         if @board[i][j].is_empty?
-          print "   ".colorize(:background => column.bg_color)
+          print "    ".colorize(:background => column.bg_color)
         else
           piece = @board[i][j].content.to_s
           print " #{piece}  ".colorize(:background => column.bg_color)
@@ -35,22 +34,6 @@ class Board
     nil
   end
 
-  def select_piece(row,column)
-    # select a piece given coords
-    # returns  Piece object
-    # returns nil if not found
-
-    if @board[row][column].is_empty?
-      print "\u{2716} ".colorize(:light_red)
-      puts "not a piece".colorize(:red)
-      return nil
-    else
-      print "\u{2714} ".colorize(:light_green)
-      puts "Piece chosen".colorize(:green)
-      piece = @board[row][column].content
-      return piece
-    end
-  end
 
 
   def move_piece(piece_row,piece_col)
@@ -60,44 +43,44 @@ class Board
     case piece.is_king?
     when false && piece.color == :red
       #from left to right of the board
-     can_move_down =  can_move_down(piece_row,piece_col, piece.color)
-     can_move_up   =  can_move_up(piece_row,piece_col, piece.color)
-     if can_move_up && !can_move_down
-       move_up_right(piece_row,piece_col)
+      can_move_down =  can_move_down(piece_row,piece_col, piece.color)
+      can_move_up   =  can_move_up(piece_row,piece_col, piece.color)
+      if can_move_up && !can_move_down
+        move_up_right(piece_row,piece_col)
 
-     elsif can_move_down && !can_move_up
-       move_down_right(piece_row,piece_col)
-     elsif !can_move_down && !can_move_up
-     else
-       prompt = "> "
-       puts "Up or down?"
-       print prompt
-       while user_input = gets.chomp
-         if user_input == "up"
-           move_up_right(piece_row,piece_col)
-           break
-         elsif user_input == "down"
-           move_down_right(piece_row,piece_col)
-           break
-         else
-           puts "Nope, Try with 'up' or 'down'"
-           puts ""
-           print "> "
-         end
-       end
-     end
-
-
+      elsif can_move_down && !can_move_up
+        move_down_right(piece_row,piece_col)
+      elsif !can_move_down && !can_move_up
+      else
+        prompt = "> "
+        puts "Up or down?"
+        print prompt
+        while user_input = gets.chomp
+          if user_input == "u"
+            move_up_right(piece_row,piece_col)
+            break
+          elsif user_input == "d"
+            move_down_right(piece_row,piece_col)
+            break
+          else
+            puts "Nope, Try with 'up' or 'down'"
+            puts ""
+            print "> "
+          end
+        end
+      end
 
 
 
-     print "\u{2714} ".colorize(:light_green)
-     print "Moving piece".colorize(:green)
-     print "[#{piece_row}][#{piece_col}]".colorize(:light_red)
-     print " to ".colorize(:green)
-     print "square".colorize(:green)
-     puts "[x][y]".colorize(:red)
-     self.print_current_state
+
+
+      print "\u{2714} ".colorize(:light_green)
+      print "Moving piece".colorize(:green)
+      print "[#{piece_row}][#{piece_col}]".colorize(:light_red)
+      print " to ".colorize(:green)
+      print "square".colorize(:green)
+      puts "[x][y]".colorize(:red)
+      self.print_current_state
 
     else
       print "\u{2716} ".colorize(:light_red)
@@ -112,15 +95,14 @@ class Board
     piece_coords = {row: pos_row, column: pos_col}
     to_coords = {row: down[:row], column: down[:column]}
     movement(piece_coords,to_coords)
-    self.print_current_state
   end
   def move_up_right(pos_row,pos_col)
     up   = {row: pos_row - 1,column: pos_col + 1}
     piece_coords = {row: pos_row, column: pos_col}
     to_coords = {row: up[:row], column: up[:column]}
     movement(piece_coords,to_coords)
-    self.print_current_state
   end
+
   def can_move_up(pos_row,pos_col, piece_color)
     piece_coords = {row: pos_row, column: pos_col}
     up   = {row: piece_coords[:row] - 1,column: piece_coords[:column] + 1}
@@ -145,6 +127,25 @@ class Board
   end
 
 
+
+  private
+  def select_piece(row,column)
+    # select a piece given coords
+    # returns  Piece object
+    # returns nil if not found
+
+    if @board[row][column].is_empty?
+      print "\u{2716} ".colorize(:light_red)
+      puts "not a piece".colorize(:red)
+      return nil
+    else
+      print "\u{2714} ".colorize(:light_green)
+      puts "Piece chosen".colorize(:green)
+      piece = @board[row][column].content
+      return piece
+    end
+  end
+
   def can_move_down(pos_row,pos_col, piece_color)
     piece_coords = {row: pos_row, column: pos_col}
     down = {row: piece_coords[:row] + 1,column: piece_coords[:column] + 1}
@@ -168,7 +169,6 @@ class Board
     end
   end
 
-  private
   def movement(from={},to={})
     #each argument must be a hash with values :row, :column
     # xx.move_piece({row:0,column:0},{row:2,column:3})
