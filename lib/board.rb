@@ -14,8 +14,8 @@ class Board
 
   def print_current_state
 
-    puts "    0    1    2   3   4   5    6    7"
-    puts "   ----------------------------------"
+    puts "    0    1    2    3    4    5    6    7"
+    puts "   ---------------------------------------"
     @board.each_with_index do |row,i|
       print i
       print ": "
@@ -40,8 +40,9 @@ class Board
     piece = select_piece(piece_row,piece_col)
     piece.nil? ? (return nil) : piece
     #check if where you want to move is blocked (can_move_up)
-    case piece.is_king?
-    when false && piece.color == :red
+    case piece.color
+    when :red
+      #CHECK IF THIS IS KING OR NOT
       #from left to right of the board
       can_move_down =  can_move_down(piece_row,piece_col, piece.color)
       can_move_up   =  can_move_up(piece_row,piece_col, piece.color)
@@ -50,6 +51,7 @@ class Board
 
       elsif can_move_down && !can_move_up
         move_down_right(piece_row,piece_col)
+
       elsif !can_move_down && !can_move_up
       else
         prompt = "> "
@@ -70,26 +72,24 @@ class Board
         end
       end
 
-
-
-
-
       print "\u{2714} ".colorize(:light_green)
       print "Moving piece".colorize(:green)
       print "[#{piece_row}][#{piece_col}]".colorize(:light_red)
-      print " to ".colorize(:green)
-      print "square".colorize(:green)
-      puts "[x][y]".colorize(:red)
+      puts " "
       self.print_current_state
 
+    when :black
+
+      move_up_left(piece_row,piece_col)
     else
       print "\u{2716} ".colorize(:light_red)
       puts "Invalid move!"
       self.print_current_state
       return nil
     end
-  end
 
+  end
+  #red, no king
   def move_down_right(pos_row,pos_col)
     down = {row: pos_row + 1,column: pos_col + 1}
     piece_coords = {row: pos_row, column: pos_col}
@@ -102,7 +102,22 @@ class Board
     to_coords = {row: up[:row], column: up[:column]}
     movement(piece_coords,to_coords)
   end
+  #black, no king
 
+  def move_down_left(pos_row,pos_col)
+    down = {row: pos_row + 1,column: pos_col - 1}
+    piece_coords = {row: pos_row, column: pos_col}
+    to_coords = {row: down[:row], column: down[:column]}
+    movement(piece_coords,to_coords)
+  end
+
+  def move_up_left(pos_row,pos_col)
+    up   = {row: pos_row - 1,column: pos_col - 1}
+    piece_coords = {row: pos_row, column: pos_col}
+    to_coords = {row: up[:row], column: up[:column]}
+    movement(piece_coords,to_coords)
+  end
+  #!black, no king
   def can_move_up(pos_row,pos_col, piece_color)
     piece_coords = {row: pos_row, column: pos_col}
     up   = {row: piece_coords[:row] - 1,column: piece_coords[:column] + 1}
@@ -125,7 +140,6 @@ class Board
       end
     end
   end
-
 
 
   private
