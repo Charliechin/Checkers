@@ -9,14 +9,14 @@ class Board
     @total_columns = 8
     @board = Array.new(@total_rows) { Array.new(@total_columns) }
     initialize_new_board
-    initial_state(:red)
+    initial_state
   end
 
   def print_current_state
 
     #YOU MAY HAVE TO CHANGE THIS, AS YOU ARE ITERATING SOBRE UN CUARTO DEL TABLERO
-    puts "    0   1   2   3   4   5   6   7"
-    puts "   -------------------------------"
+    puts "    0    1    2   3   4   5    6    7"
+    puts "   ----------------------------------"
     @board.each_with_index do |row,i|
       print i
       print ": "
@@ -24,7 +24,8 @@ class Board
         if @board[i][j].is_empty?
           print "   ".colorize(:background => column.bg_color)
         else
-          print " \u{1F534} ".colorize(:background => column.bg_color)
+          piece = @board[i][j].content.to_s
+          print " #{piece}  ".colorize(:background => column.bg_color)
         end
         print " "
       end
@@ -198,11 +199,18 @@ class Board
     @board
   end
 
-  def initial_state(color_chosen)
+  def initial_state
     (0..7).each do |row|
       (0..2).each do |cell|
         if cell.even? && row.even? || cell.odd? && row.odd?
-          @board[row][cell].content = Piece.new(color_chosen)
+          @board[row][cell].content = Piece.new(:red)
+        end
+      end
+    end
+    (0..7).each do |row|
+      (5..7).each do |cell|
+        if cell.even? && row.even? || cell.odd? && row.odd?
+          @board[row][cell].content = Piece.new(:black)
         end
       end
     end
