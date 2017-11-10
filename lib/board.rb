@@ -5,8 +5,8 @@ class Board
     # depending of the quarter we apply different methods
     @quarter_number = quarter_number
     #at the moment, I'll just launch the board method here
-    @total_rows = 4
-    @total_columns = 4
+    @total_rows = 8
+    @total_columns = 8
     @board = Array.new(@total_rows) { Array.new(@total_columns) }
     initialize_new_board
     initial_state(:red)
@@ -15,8 +15,8 @@ class Board
   def print_current_state
 
     #YOU MAY HAVE TO CHANGE THIS, AS YOU ARE ITERATING SOBRE UN CUARTO DEL TABLERO
-    puts "    0   1   2   3"
-    puts "   --------------- "
+    puts "    0   1   2   3   4   5   6   7"
+    puts "   -------------------------------"
     @board.each_with_index do |row,i|
       print i
       print ": "
@@ -171,7 +171,7 @@ class Board
   end
 
   def initial_state(color_chosen)
-    (0..3).each do |row|
+    (0..7).each do |row|
       (0..2).each do |cell|
         if cell.even? && row.even? || cell.odd? && row.odd?
           @board[row][cell].content = Piece.new(color_chosen)
