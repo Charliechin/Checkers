@@ -79,7 +79,7 @@ class Board
       self.print_current_state
 
     when :black
-
+      #HERE YOU HAVE TO ASK THE USER, JSUT LIKE FOR RED ONES
       move_up_left(piece_row,piece_col)
     else
       print "\u{2716} ".colorize(:light_red)
@@ -141,7 +141,23 @@ class Board
     end
   end
 
+  def count_pieces
+    #count all the pieces in the board
+    #return hash pieces[:red,:black]
+    pieces = {red:0, black: 0}
+    @board.each_with_index do |row,i|
+      row.each do |cell|
+        is_piece = cell.content.is_a? Piece
+        if  is_piece && cell.content.color == :red
+          pieces[:red] += 1
 
+        elsif is_piece && cell.content.color == :black
+          pieces[:black] += 1
+        end
+      end
+    end
+    pieces
+  end
   private
   def select_piece(row,column)
     # select a piece given coords
