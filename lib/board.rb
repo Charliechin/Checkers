@@ -39,20 +39,20 @@ class Board
   def move_piece(piece_row,piece_col)
     piece = select_piece(piece_row,piece_col)
     piece.nil? ? (return nil) : piece
-    #check if where you want to move is blocked (can_move_up)
+    #check if where you want to move is blocked (can_move_up_right)
     case piece.color
     when :red
       #CHECK IF THIS IS KING OR NOT
       #from left to right of the board
-      can_move_down =  can_move_down(piece_row,piece_col, piece.color)
-      can_move_up   =  can_move_up(piece_row,piece_col, piece.color)
-      if can_move_up && !can_move_down
+      can_move_down_right =  can_move_down_right(piece_row,piece_col)
+      can_move_up_right   =  can_move_up_right(piece_row,piece_col)
+      if can_move_up_right && !can_move_down_right
         move_up_right(piece_row,piece_col)
 
-      elsif can_move_down && !can_move_up
+      elsif can_move_down_right && !can_move_up_right
         move_down_right(piece_row,piece_col)
 
-      elsif !can_move_down && !can_move_up
+      elsif !can_move_down_right && !can_move_up_right
       else
         prompt = "> "
         puts "Up or down?"
@@ -79,8 +79,41 @@ class Board
       self.print_current_state
 
     when :black
+      binding.pry
+      #CHECK IF THIS IS KING OR NOT
+      #from left to right of the board
+      can_move_down_left =  can_move_down_left(piece_row,piece_col)
+      can_move_up_left   =  can_move_up_left(piece_row,piece_col)
+      if can_move_up_left && !can_move_down_left
+        move_up_left(piece_row,piece_col)
 
-      move_up_left(piece_row,piece_col)
+      elsif can_move_down_left && !can_move_up_left
+        move_down_left(piece_row,piece_col)
+
+      elsif !can_move_down_left && !can_move_up_left
+      else
+        prompt = "> "
+        puts "Up or down?"
+        print prompt
+        while user_input = gets.chomp
+          if user_input == "u"
+            move_up_left(piece_row,piece_col)
+            break
+          elsif user_input == "d"
+            move_down_left(piece_row,piece_col)
+            break
+          else
+            puts "Nope, Try with 'up' or 'down'"
+            puts ""
+            print "> "
+          end
+        end
+      end
+      print "\u{2714} ".colorize(:light_green)
+      print "Moving piece".colorize(:green)
+      print "[#{piece_row}][#{piece_col}]".colorize(:light_red)
+      puts " "
+      self.print_current_state
     else
       print "\u{2716} ".colorize(:light_red)
       puts "Invalid move!"
@@ -118,30 +151,48 @@ class Board
     movement(piece_coords,to_coords)
   end
   #!black, no king
-  def can_move_up(pos_row,pos_col, piece_color)
+
+
+  def can_move_down_right(pos_row,pos_col)
     piece_coords = {row: pos_row, column: pos_col}
-    up   = {row: piece_coords[:row] - 1,column: piece_coords[:column] + 1}
+    down = {row: piece_coords[:row] + 1,column: piece_coords[:column] + 1}
 
-    case piece_color
-    when :red
-      #if the piece is in the top row and tries to move further up
-      if up[:row] < 0
-        print "\u{2716} ".colorize(:light_red)
-        puts "Movement out of bounds".colorize(:red)
-        return false
+    #if the piece is in the bottom row and tries to move further down
+    if down[:row] > @total_rows-1
+      print "\u{2716} ".colorize(:light_red)
+      puts "Movement out of bounds".colorize(:red)
+      return false
 
-      elsif @board[up[:row]][up[:column]].is_empty?
-        to_coords = {row: up[:row], column: up[:column]}
-        return true
-      else
-        print "\u{2716} ".colorize(:light_red)
-        puts "up square is not free".colorize(:red)
-        return false
-      end
+    elsif @board[down[:row]][down[:column]].is_empty?
+      to_coords = {row: down[:row], column: down[:column]}
+      return true
+    else
+      print "\u{2716} ".colorize(:light_red)
+      puts "down square is not free".colorize(:red)
+      return false
     end
   end
 
 
+  def can_move_down_left(pos_row,pos_col)
+    piece_coords = {row: pos_row, column: pos_col}
+    down = {row: piece_coords[:row] + 1,column: piece_coords[:column] - 1}
+
+    #if the piece is in the bottom row and tries to move further down
+    if down[:row] > @total_rows-1
+      print "\u{2716} ".colorize(:light_red)
+      puts "Movement out of bounds".colorize(:red)
+      return false
+
+    elsif @board[down[:row]][down[:column]].is_empty?
+      to_coords = {row: down[:row], column: down[:column]}
+      return true
+    else
+      print "\u{2716} ".colorize(:light_red)
+      puts "down square is not free".colorize(:red)
+      return false
+    end
+  end
   private
   def select_piece(row,column)
     # select a piece given coords
@@ -160,28 +211,7 @@ class Board
     end
   end
 
-  def can_move_down(pos_row,pos_col, piece_color)
-    piece_coords = {row: pos_row, column: pos_col}
-    down = {row: piece_coords[:row] + 1,column: piece_coords[:column] + 1}
 
-    case piece_color
-    when :red
-      #if the piece is in the bottom row and tries to move further down
-      if down[:row] > @total_rows-1
-        print "\u{2716} ".colorize(:light_red)
-        puts "Movement out of bounds".colorize(:red)
-        return false
-
-      elsif @board[down[:row]][down[:column]].is_empty?
-        to_coords = {row: down[:row], column: down[:column]}
-        return true
-      else
-        print "\u{2716} ".colorize(:light_red)
-        puts "down square is not free".colorize(:red)
-        return false
-      end
-    end
-  end
 
   def movement(from={},to={})
     #each argument must be a hash with values :row, :column
@@ -197,6 +227,47 @@ class Board
     #self.print_current_state
   end
 
+
+  def can_move_up_right(pos_row,pos_col)
+    piece_coords = {row: pos_row, column: pos_col}
+    up   = {row: piece_coords[:row] - 1,column: piece_coords[:column] + 1}
+
+    #if the piece is in the top row and tries to move further up
+    if up[:row] < 0
+      print "\u{2716} ".colorize(:light_red)
+      puts "Movement out of bounds".colorize(:red)
+      return false
+
+    elsif @board[up[:row]][up[:column]].is_empty?
+      to_coords = {row: up[:row], column: up[:column]}
+      return true
+    else
+      print "\u{2716} ".colorize(:light_red)
+      puts "up square is not free".colorize(:red)
+      return false
+    end
+  end
+
+
+  def can_move_up_left(pos_row,pos_col)
+    piece_coords = {row: pos_row, column: pos_col}
+    up   = {row: piece_coords[:row] - 1,column: piece_coords[:column] - 1}
+
+    #if the piece is in the top row and tries to move further up
+    if up[:row] < 0
+      print "\u{2716} ".colorize(:light_red)
+      puts "Movement out of bounds".colorize(:red)
+      return false
+
+    elsif @board[up[:row]][up[:column]].is_empty?
+      to_coords = {row: up[:row], column: up[:column]}
+      return true
+    else
+      print "\u{2716} ".colorize(:light_red)
+      puts "up square is not free".colorize(:red)
+      return false
+    end
+  end
 
 
   def initialize_new_board
