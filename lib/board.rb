@@ -5,11 +5,15 @@ class Board
     # depending of the quarter we apply different methods
     @quarter_number = quarter_number
     #at the moment, I'll just launch the board method here
-    @total_rows = 8
-    @total_columns = 8
+    @total_rows = 3
+    @total_columns = 4
     @board = Array.new(@total_rows) { Array.new(@total_columns) }
     initialize_new_board
     initial_state
+
+    #del this
+    @board[1][3].content = Piece.new(:black)
+    #!del this
   end
 
   def print_current_state
@@ -34,7 +38,14 @@ class Board
     nil
   end
 
+  def jump_down_right(piece_row, piece_col)
+    down = {row: piece_row + 1,column: piece_col + 1}
+    to_coords = {row: down[:row], column: down[:column]}
+    binding.pry
+    #delete_piece(piece_coords)
+    movement(piece_coords,to_coords)
 
+  end
 
   def move_piece(piece_row,piece_col)
     piece = select_piece(piece_row,piece_col)
@@ -154,21 +165,29 @@ class Board
   def can_move_down_right(pos_row,pos_col)
     piece_coords = {row: pos_row, column: pos_col}
     down = {row: piece_coords[:row] + 1,column: piece_coords[:column] + 1}
+    to = {row: piece_coords[:row] + 2,column: piece_coords[:column] + 2}
+      #if the piece is in the bottom row and tries to move further down
+      if down[:row] > @total_rows-1
+        print "\u{2716} ".colorize(:light_red)
+        puts "Movement out of bounds".colorize(:red)
+        return false
 
-    #if the piece is in the bottom row and tries to move further down
-    if down[:row] > @total_rows-1
-      print "\u{2716} ".colorize(:light_red)
-      puts "Movement out of bounds".colorize(:red)
-      return false
-
-    elsif @board[down[:row]][down[:column]].is_empty?
-      to_coords = {row: down[:row], column: down[:column]}
-      return true
-    else
-      print "\u{2716} ".colorize(:light_red)
-      puts "down square is not free".colorize(:red)
-      return false
-    end
+      elsif @board[down[:row]][down[:column]].is_empty?
+        #to_coords = {row: down[:row], column: down[:column]}
+        return true
+      else
+        print "\u{2716} ".colorize(:light_red)
+        puts "down square is not free".colorize(:red)
+        piece_from_color         = @board[piece_coords[:row]][piece_coords[:column]].content.color
+        piece_to_color           = @board[down[:row]][down[:column]].content.color
+        space_to_move_after_jump = @board[down[:row]+1][down[:column]+1]
+        if piece_from_color != piece_to_color && space_to_move_after_jump.is_empty?
+          binding.pry
+          delete_piece(down)
+          movement(piece_coords, to)
+        end
+        return false
+      end
   end
 
 
@@ -225,6 +244,10 @@ class Board
     #self.print_current_state
   end
 
+  def delete_piece(piece_coords={})
+    #each argument must be a hash with values :row, :column
+    @board[ piece_coords[:row] ][ piece_coords[:column]  ].content = "x"
+  end
 
   def can_move_up_right(pos_row,pos_col)
     piece_coords = {row: pos_row, column: pos_col}
@@ -242,6 +265,7 @@ class Board
     else
       print "\u{2716} ".colorize(:light_red)
       puts "up square is not free".colorize(:red)
+      binding.pry
       return false
     end
   end
@@ -283,20 +307,20 @@ class Board
   end
 
   def initial_state
-    (0..7).each do |row|
+    (0..@total_rows-1).each do |row|
       (0..2).each do |cell|
         if cell.even? && row.even? || cell.odd? && row.odd?
           @board[row][cell].content = Piece.new(:red)
         end
       end
     end
-    (0..7).each do |row|
-      (5..7).each do |cell|
-        if cell.even? && row.even? || cell.odd? && row.odd?
-          @board[row][cell].content = Piece.new(:black)
-        end
-      end
-    end
+    # (0..7).each do |row|
+    #   (5..7).each do |cell|
+    #     if cell.even? && row.even? || cell.odd? && row.odd?
+    #       @board[row][cell].content = Piece.new(:black)
+    #     end
+    #   end
+    # end
     @board
   end
   def generate_quarter(quarter_number)
