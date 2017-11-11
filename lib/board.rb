@@ -79,7 +79,6 @@ class Board
       self.print_current_state
 
     when :black
-      binding.pry
       #CHECK IF THIS IS KING OR NOT
       #from left to right of the board
       can_move_down_left =  can_move_down_left(piece_row,piece_col)
@@ -120,7 +119,6 @@ class Board
       self.print_current_state
       return nil
     end
-
   end
   #red, no king
   def move_down_right(pos_row,pos_col)
@@ -173,15 +171,6 @@ class Board
     end
   end
 
-  def count_pieces
-    #count all the pieces in the board
-    #return hash pieces[:red,:black]
-    pieces = {red:0, black: 0}
-    @board.each_with_index do |row,i|
-      row.each do |cell|
-        is_piece = cell.content.is_a? Piece
-        if  is_piece && cell.content.color == :red
-          pieces[:red] += 1
 
   def can_move_down_left(pos_row,pos_col)
     piece_coords = {row: pos_row, column: pos_col}
