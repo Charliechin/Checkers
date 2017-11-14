@@ -6,7 +6,7 @@ class Board
     @quarter_number = quarter_number
     #at the moment, I'll just launch the board method here
     @total_rows = 8
-    @total_columns = 8
+    @total_columns= 8
     @board = Array.new(@total_rows) { Array.new(@total_columns) }
     initialize_new_board
     initial_state
@@ -54,7 +54,6 @@ class Board
       can_move_up_right   =  can_move_up_right(piece_row,piece_col)
       if can_move_up_right && !can_move_down_right
         move_up_right(piece_row,piece_col)
-
       elsif can_move_down_right && !can_move_up_right
         move_down_right(piece_row,piece_col)
 
@@ -65,9 +64,13 @@ class Board
         print prompt
         while user_input = gets.chomp
           if user_input == "u"
+            #check if king
+            if piece_col == @total_columns - 1
+            end
             move_up_right(piece_row,piece_col)
             break
           elsif user_input == "d"
+            #check if king
             move_down_right(piece_row,piece_col)
             break
           else
@@ -131,12 +134,21 @@ class Board
     down = {row: pos_row + 1,column: pos_col + 1}
     piece_coords = {row: pos_row, column: pos_col}
     to_coords = {row: down[:row], column: down[:column]}
+    if to_coords[:column] == @total_columns - 1
+      piece = select_piece(piece_coords[:row],piece_coords[:column])
+      piece.make_king
+    end
     movement(piece_coords,to_coords)
   end
   def move_up_right(pos_row,pos_col)
     up   = {row: pos_row - 1,column: pos_col + 1}
     piece_coords = {row: pos_row, column: pos_col}
     to_coords = {row: up[:row], column: up[:column]}
+    #Check if piece is in the last column. If so, make it king
+    if to_coords[:column] == @total_columns - 1
+      piece = select_piece(piece_coords[:row],piece_coords[:column])
+      piece.make_king
+    end
     movement(piece_coords,to_coords)
   end
   #black, no king
@@ -145,6 +157,11 @@ class Board
     down = {row: pos_row + 1,column: pos_col - 1}
     piece_coords = {row: pos_row, column: pos_col}
     to_coords = {row: down[:row], column: down[:column]}
+    #Check if piece is in the last column. If so, make it king
+    if to_coords[:column] == 0
+      piece = select_piece(piece_coords[:row],piece_coords[:column])
+      piece.make_king
+    end
     movement(piece_coords,to_coords)
   end
 
@@ -152,6 +169,11 @@ class Board
     up   = {row: pos_row - 1,column: pos_col - 1}
     piece_coords = {row: pos_row, column: pos_col}
     to_coords = {row: up[:row], column: up[:column]}
+    #Check if piece is in the last column. If so, make it king
+    if to_coords[:column] == 0
+      piece = select_piece(piece_coords[:row],piece_coords[:column])
+      piece.make_king
+    end
     movement(piece_coords,to_coords)
   end
   #!black, no king
@@ -182,7 +204,6 @@ class Board
   def movement(from={},to={})
     #each argument must be a hash with values :row, :column
     # xx.move_piece({row:0,column:0},{row:2,column:3})
-    #binding.pry
     #piece = @board[ from[:row] ][ from[:column] ].content
 
     from         = @board[ from[:row] ][ from[:column] ]
@@ -217,7 +238,11 @@ class Board
       puts "down square is not free".colorize(:red)
       piece_from_color         = @board[piece_coords[:row]][piece_coords[:column]].content.color
       piece_to_color           = @board[down[:row]][down[:column]].content.color
+      begin
       space_to_move_after_jump = @board[down[:row]+1][down[:column]+1]
+      rescue
+        space_to_move_after_jump = nil
+      end
       if piece_from_color != piece_to_color && space_to_move_after_jump.is_empty?
         delete_piece(down)
         movement(piece_coords, to)
@@ -234,7 +259,6 @@ class Board
     piece_coords = {row: pos_row, column: pos_col}
     down = {row: piece_coords[:row] + 1,column: piece_coords[:column] - 1}
     if piece_coords[:row] + 2 > @total_rows
-      binding.pry
     end
     to = {row: piece_coords[:row] + 2,column: piece_coords[:column] - 2}
 
@@ -250,7 +274,6 @@ class Board
     else
       print "\u{2716} ".colorize(:light_red)
       puts "down square is not free".colorize(:red)
-      binding.pry
       piece_from_color         = @board[piece_coords[:row]][piece_coords[:column]].content.color
       piece_to_color           = @board[down[:row]][down[:column]].content.color
       begin
@@ -277,21 +300,26 @@ class Board
     piece_coords = {row: pos_row, column: pos_col}
     up   = {row: piece_coords[:row] - 1,column: piece_coords[:column] + 1}
     to   = {row: piece_coords[:row] - 2,column: piece_coords[:column] + 2}
-
     #if the piece is in the top row and tries to move further up 
-    if to[:row] < 0
+    if to[:row] < 0 && up[:row] < 0
       print "\u{2716} ".colorize(:light_red)
       puts "Movement out of bounds".colorize(:red)
       return false
     elsif to[:row] > @total_rows
-      binding.pry
+      return false
+    elsif to[:column] > @total_columns
+      return false
     elsif @board[up[:row]][up[:column]].is_empty?
       to_coords = {row: up[:row], column: up[:column]}
       return true
     else
       piece_from_color         = @board[piece_coords[:row]][piece_coords[:column]].content.color
       piece_to_color           = @board[up[:row]][up[:column]].content.color
-      space_to_move_after_jump = @board[to[:row]][to[:column]]
+      begin
+        space_to_move_after_jump = @board[to[:row]][to[:column]]
+      rescue
+        space_to_move_after_jump = nil
+      end
       if piece_from_color != piece_to_color && space_to_move_after_jump.is_empty?
         delete_piece(up)
         movement(piece_coords, to)
@@ -348,13 +376,13 @@ class Board
   end
 
   def initial_state
-    (0..@total_rows-1).each do |row|
-      (0..2).each do |cell|
-        if cell.even? && row.even? || cell.odd? && row.odd?
-          @board[row][cell].content = Piece.new(:red)
-        end
-      end
-    end
+   # (0..@total_rows-1).each do |row|
+   #   (0..2).each do |cell|
+   #     if cell.even? && row.even? || cell.odd? && row.odd?
+   #       @board[row][cell].content = Piece.new(:red)
+   #     end
+   #   end
+   # end
     (0..7).each do |row|
       (5..7).each do |cell|
         if cell.even? && row.even? || cell.odd? && row.odd?
@@ -362,7 +390,7 @@ class Board
         end
       end
     end
-    @board
+   @board
   end
 
 end

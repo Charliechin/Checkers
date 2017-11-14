@@ -22,14 +22,24 @@ class Piece
   end
 
   def to_s
-    if @color == :red
-       "\u{1F534}"
-    else
-       "\u{1F535}"
+    case @color
+    when :red
+      if self.is_king?
+        "\u{1f530}"
+      else
+        "\u{1F534}"
+      end
+    when :black
+      if self.is_king?
+        "\u{1F536}"
+      else
+        "\u{1F535}"
+      end
     end
   end
 
   def make_king
+    puts "I'm a King now!"
     @king = true
   end
 end
