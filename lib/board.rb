@@ -147,7 +147,6 @@ class Board
       piece = select_piece(piece_coords[:row],piece_coords[:column])
       piece.make_king
     end
-    binding.pry
     self.save_state
     movement(piece_coords,to_coords)
   end
@@ -203,6 +202,7 @@ class Board
 
   def redo_movement
     next_state = redoArr.pop
+    @undoArr << self.board
     self.board = next_state
     self.print_current_state
     puts "redo completed... you cheater!"
