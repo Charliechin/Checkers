@@ -458,13 +458,13 @@ end
   end
 
   def initial_state
-    # (0..@total_rows-1).each do |row|
-    #   (0..2).each do |cell|
-    #     if cell.even? && row.even? || cell.odd? && row.odd?
-    #       @board[row][cell].content = Piece.new(:red)
-    #     end
-    #   end
-    # end
+     (0..@total_rows-1).each do |row|
+       (0..2).each do |cell|
+         if cell.even? && row.even? || cell.odd? && row.odd?
+           @board[row][cell].content = Piece.new(:red)
+         end
+       end
+     end
     (0..7).each do |row|
       (5..7).each do |cell|
         if cell.even? && row.even? || cell.odd? && row.odd?
