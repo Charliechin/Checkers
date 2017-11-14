@@ -195,11 +195,18 @@ class Board
 
   def undo_movement
     prev_state = undoArr.pop
+    @redoArr << self.board
     self.board = prev_state
     self.print_current_state
     puts "Undo completed... you cheater!"
   end
 
+  def redo_movement
+    next_state = redoArr.pop
+    self.board = next_state
+    self.print_current_state
+    puts "redo completed... you cheater!"
+  end
   private
   def select_piece(row,column)
     # select a piece given coords
@@ -409,7 +416,6 @@ class Board
         end
       end
     end
-    self.save_state
     @board
   end
 
