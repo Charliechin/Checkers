@@ -5,15 +5,11 @@ class Board
     # depending of the quarter we apply different methods
     @quarter_number = quarter_number
     #at the moment, I'll just launch the board method here
-    @total_rows = 3
-    @total_columns = 4
+    @total_rows = 8
+    @total_columns = 8
     @board = Array.new(@total_rows) { Array.new(@total_columns) }
     initialize_new_board
     initial_state
-
-    #del this
-    @board[1][3].content = Piece.new(:black)
-    #!del this
   end
 
   def print_current_state
@@ -38,14 +34,13 @@ class Board
     nil
   end
 
-  def jump_down_right(piece_row, piece_col)
-    down = {row: piece_row + 1,column: piece_col + 1}
-    to_coords = {row: down[:row], column: down[:column]}
-    binding.pry
-    #delete_piece(piece_coords)
-    movement(piece_coords,to_coords)
-
-  end
+#  def jump_down_right(piece_row, piece_col)
+#    down = {row: piece_row + 1,column: piece_col + 1}
+#    to_coords = {row: down[:row], column: down[:column]}
+#    #delete_piece(piece_coords)
+#    movement(piece_coords,to_coords)
+#
+#  end
 
   def move_piece(piece_row,piece_col)
     piece = select_piece(piece_row,piece_col)
@@ -66,7 +61,7 @@ class Board
       elsif !can_move_down_right && !can_move_up_right
       else
         prompt = "> "
-        puts "Up or down?"
+        puts "Up or down? --- (u/d) --- "
         print prompt
         while user_input = gets.chomp
           if user_input == "u"
@@ -76,7 +71,7 @@ class Board
             move_down_right(piece_row,piece_col)
             break
           else
-            puts "Nope, Try with 'up' or 'down'"
+            puts "Nope, Try with 'u' or 'd'"
             puts ""
             print "> "
           end
@@ -103,7 +98,7 @@ class Board
       elsif !can_move_down_left && !can_move_up_left
       else
         prompt = "> "
-        puts "Up or down?"
+        puts "Up or down? --- (u/d) --- "
         print prompt
         while user_input = gets.chomp
           if user_input == "u"
@@ -162,54 +157,8 @@ class Board
   #!black, no king
 
 
-  def can_move_down_right(pos_row,pos_col)
-    piece_coords = {row: pos_row, column: pos_col}
-    down = {row: piece_coords[:row] + 1,column: piece_coords[:column] + 1}
-    to = {row: piece_coords[:row] + 2,column: piece_coords[:column] + 2}
-      #if the piece is in the bottom row and tries to move further down
-      if down[:row] > @total_rows-1
-        print "\u{2716} ".colorize(:light_red)
-        puts "Movement out of bounds".colorize(:red)
-        return false
-
-      elsif @board[down[:row]][down[:column]].is_empty?
-        #to_coords = {row: down[:row], column: down[:column]}
-        return true
-      else
-        print "\u{2716} ".colorize(:light_red)
-        puts "down square is not free".colorize(:red)
-        piece_from_color         = @board[piece_coords[:row]][piece_coords[:column]].content.color
-        piece_to_color           = @board[down[:row]][down[:column]].content.color
-        space_to_move_after_jump = @board[down[:row]+1][down[:column]+1]
-        if piece_from_color != piece_to_color && space_to_move_after_jump.is_empty?
-          binding.pry
-          delete_piece(down)
-          movement(piece_coords, to)
-        end
-        return false
-      end
-  end
 
 
-  def can_move_down_left(pos_row,pos_col)
-    piece_coords = {row: pos_row, column: pos_col}
-    down = {row: piece_coords[:row] + 1,column: piece_coords[:column] - 1}
-
-    #if the piece is in the bottom row and tries to move further down
-    if down[:row] > @total_rows-1
-      print "\u{2716} ".colorize(:light_red)
-      puts "Movement out of bounds".colorize(:red)
-      return false
-
-    elsif @board[down[:row]][down[:column]].is_empty?
-      to_coords = {row: down[:row], column: down[:column]}
-      return true
-    else
-      print "\u{2716} ".colorize(:light_red)
-      puts "down square is not free".colorize(:red)
-      return false
-    end
-  end
   private
   def select_piece(row,column)
     # select a piece given coords
@@ -249,23 +198,105 @@ class Board
     @board[ piece_coords[:row] ][ piece_coords[:column]  ].content = "x"
   end
 
-  def can_move_up_right(pos_row,pos_col)
-    piece_coords = {row: pos_row, column: pos_col}
-    up   = {row: piece_coords[:row] - 1,column: piece_coords[:column] + 1}
 
-    #if the piece is in the top row and tries to move further up
-    if up[:row] < 0
+  def can_move_down_right(pos_row,pos_col)
+    piece_coords = {row: pos_row, column: pos_col}
+    down = {row: piece_coords[:row] + 1,column: piece_coords[:column] + 1}
+    to = {row: piece_coords[:row] + 2,column: piece_coords[:column] + 2}
+    #if the piece is in the bottom row and tries to move further down
+    if down[:row] > @total_rows-1
       print "\u{2716} ".colorize(:light_red)
       puts "Movement out of bounds".colorize(:red)
       return false
 
+    elsif @board[down[:row]][down[:column]].is_empty?
+      #to_coords = {row: down[:row], column: down[:column]}
+      return true
+    else
+      print "\u{2716} ".colorize(:light_red)
+      puts "down square is not free".colorize(:red)
+      piece_from_color         = @board[piece_coords[:row]][piece_coords[:column]].content.color
+      piece_to_color           = @board[down[:row]][down[:column]].content.color
+      space_to_move_after_jump = @board[down[:row]+1][down[:column]+1]
+      if piece_from_color != piece_to_color && space_to_move_after_jump.is_empty?
+        delete_piece(down)
+        movement(piece_coords, to)
+      end
+      return false
+    end
+  end
+
+  def can_move_down_left(pos_row,pos_col)
+    # private
+    # return true if can move one row down and one row to the left
+    # return false if cannot move to that possition
+
+    piece_coords = {row: pos_row, column: pos_col}
+    down = {row: piece_coords[:row] + 1,column: piece_coords[:column] - 1}
+    if piece_coords[:row] + 2 > @total_rows
+      binding.pry
+    end
+    to = {row: piece_coords[:row] + 2,column: piece_coords[:column] - 2}
+
+    #if the piece is in the bottom row and tries to move further down
+    if down[:row] > @total_rows-1
+      print "\u{2716} ".colorize(:light_red)
+      puts "Movement out of bounds".colorize(:red)
+      return false
+
+    elsif @board[down[:row]][down[:column]].is_empty?
+      to_coords = {row: down[:row], column: down[:column]}
+      return true
+    else
+      print "\u{2716} ".colorize(:light_red)
+      puts "down square is not free".colorize(:red)
+      binding.pry
+      piece_from_color         = @board[piece_coords[:row]][piece_coords[:column]].content.color
+      piece_to_color           = @board[down[:row]][down[:column]].content.color
+      begin
+        space_to_move_after_jump = @board[to[:row]][to[:column]]
+      rescue
+        space_to_move_after_jump = nil
+      end
+      if piece_from_color != piece_to_color && space_to_move_after_jump.is_empty?
+        delete_piece(down)
+        movement(piece_coords, to)
+        print "\u{2716} ".colorize(:light_red)
+        puts "Movement out of bounds".colorize(:red)
+        return false
+      end
+      return false
+    end
+  end
+
+  def can_move_up_right(pos_row,pos_col)
+    # private
+    # return true if can move one row up and one row to the right
+    # return false if cannot move to that possition
+
+    piece_coords = {row: pos_row, column: pos_col}
+    up   = {row: piece_coords[:row] - 1,column: piece_coords[:column] + 1}
+    to   = {row: piece_coords[:row] - 2,column: piece_coords[:column] + 2}
+
+    #if the piece is in the top row and tries to move further up 
+    if to[:row] < 0
+      print "\u{2716} ".colorize(:light_red)
+      puts "Movement out of bounds".colorize(:red)
+      return false
+    elsif to[:row] > @total_rows
+      binding.pry
     elsif @board[up[:row]][up[:column]].is_empty?
       to_coords = {row: up[:row], column: up[:column]}
       return true
     else
-      print "\u{2716} ".colorize(:light_red)
-      puts "up square is not free".colorize(:red)
-      binding.pry
+      piece_from_color         = @board[piece_coords[:row]][piece_coords[:column]].content.color
+      piece_to_color           = @board[up[:row]][up[:column]].content.color
+      space_to_move_after_jump = @board[to[:row]][to[:column]]
+      if piece_from_color != piece_to_color && space_to_move_after_jump.is_empty?
+        delete_piece(up)
+        movement(piece_coords, to)
+      end
+
       return false
     end
   end
@@ -274,19 +305,29 @@ class Board
   def can_move_up_left(pos_row,pos_col)
     piece_coords = {row: pos_row, column: pos_col}
     up   = {row: piece_coords[:row] - 1,column: piece_coords[:column] - 1}
+    to   = {row: piece_coords[:row] - 2,column: piece_coords[:column] - 2}
 
     #if the piece is in the top row and tries to move further up
     if up[:row] < 0
       print "\u{2716} ".colorize(:light_red)
       puts "Movement out of bounds".colorize(:red)
+      #ask the user to move again
       return false
 
     elsif @board[up[:row]][up[:column]].is_empty?
       to_coords = {row: up[:row], column: up[:column]}
       return true
     else
-      print "\u{2716} ".colorize(:light_red)
-      puts "up square is not free".colorize(:red)
+      piece_from_color         = @board[piece_coords[:row]][piece_coords[:column]].content.color
+      piece_to_color           = @board[up[:row]][up[:column]].content.color
+      space_to_move_after_jump = @board[to[:row]][to[:column]]
+
+      if piece_from_color != piece_to_color && space_to_move_after_jump.is_empty?
+        delete_piece(up)
+        movement(piece_coords, to)
+      end
+      #print "\u{2716} ".colorize(:light_red)
+      #puts "up square is not free".colorize(:red)
       return false
     end
   end
@@ -314,17 +355,14 @@ class Board
         end
       end
     end
-    # (0..7).each do |row|
-    #   (5..7).each do |cell|
-    #     if cell.even? && row.even? || cell.odd? && row.odd?
-    #       @board[row][cell].content = Piece.new(:black)
-    #     end
-    #   end
-    # end
+    (0..7).each do |row|
+      (5..7).each do |cell|
+        if cell.even? && row.even? || cell.odd? && row.odd?
+          @board[row][cell].content = Piece.new(:black)
+        end
+      end
+    end
     @board
-  end
-  def generate_quarter(quarter_number)
-
   end
 
 end

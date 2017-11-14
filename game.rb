@@ -10,16 +10,16 @@ require './lib/piece'
 prompt = "> "
 puts "        Choose an option!"
 puts "---------------------------------"
-puts " 1. Player vs AI"
-puts " 2. Player vs Player"
-puts " 3. AI vs AI"
+puts " 1. Player vs Player"
+puts " 2. Player vs CPU"
+puts " 3. CPU vs CPU"
 puts "---------------------------------"
 print prompt
 
 while user_input = gets.chomp #loops while getting user input
   case user_input
   when "1"
-    board_obj = Board.new(1) 
+    board_obj = Board.new(1)
     board_obj.print_current_state
     binding.pry
     break

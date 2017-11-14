@@ -19,15 +19,16 @@ class Square
       @bg_color = bg_color
     end
   end
-
-
-
-
-
-
-
-
-
+def has_piece?
+  # returns the color of the piece in said square
+  # nil if there is something else in said square
+  if self.content.is_a? Piece
+    piece = self.content
+    return piece.get_color
+  else
+    nil
+  end
+end
   def is_empty?
     if self.content == "x"
       true
