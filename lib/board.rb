@@ -1,5 +1,5 @@
 class Board
-  attr_accessor :board
+  attr_accessor :board, :history, :undoArr, :redoArr
   def initialize(quarter_number)
     # quarter_number: a Board is made out of 4 quarters.
     # depending of the quarter we apply different methods
@@ -7,6 +7,9 @@ class Board
     #at the moment, I'll just launch the board method here
     @total_rows = 8
     @total_columns= 8
+    @history = []
+    @undoArr = []
+    @redoArr = []
     @board = Array.new(@total_rows) { Array.new(@total_columns) }
     initialize_new_board
     initial_state
@@ -42,6 +45,12 @@ class Board
 #
 #  end
 
+  def save_state
+    @history << Marshal.load( Marshal.dump(self.board) )
+    @undoArr << Marshal.load( Marshal.dump(self.board) )
+    puts "movement saved"
+  end
+  
   def move_piece(piece_row,piece_col)
     piece = select_piece(piece_row,piece_col)
     piece.nil? ? (return nil) : piece
@@ -138,6 +147,8 @@ class Board
       piece = select_piece(piece_coords[:row],piece_coords[:column])
       piece.make_king
     end
+    binding.pry
+    self.save_state
     movement(piece_coords,to_coords)
   end
   def move_up_right(pos_row,pos_col)
@@ -149,6 +160,7 @@ class Board
       piece = select_piece(piece_coords[:row],piece_coords[:column])
       piece.make_king
     end
+    self.save_state
     movement(piece_coords,to_coords)
   end
   #black, no king
@@ -162,6 +174,7 @@ class Board
       piece = select_piece(piece_coords[:row],piece_coords[:column])
       piece.make_king
     end
+    self.save_state
     movement(piece_coords,to_coords)
   end
 
@@ -174,12 +187,18 @@ class Board
       piece = select_piece(piece_coords[:row],piece_coords[:column])
       piece.make_king
     end
+    self.save_state
     movement(piece_coords,to_coords)
   end
   #!black, no king
 
 
-
+  def undo_movement
+    prev_state = undoArr.pop
+    self.board = prev_state
+    self.print_current_state
+    puts "Undo completed... you cheater!"
+  end
 
   private
   def select_piece(row,column)
@@ -239,7 +258,7 @@ class Board
       piece_from_color         = @board[piece_coords[:row]][piece_coords[:column]].content.color
       piece_to_color           = @board[down[:row]][down[:column]].content.color
       begin
-      space_to_move_after_jump = @board[down[:row]+1][down[:column]+1]
+        space_to_move_after_jump = @board[down[:row]+1][down[:column]+1]
       rescue
         space_to_move_after_jump = nil
       end
@@ -376,13 +395,13 @@ class Board
   end
 
   def initial_state
-   # (0..@total_rows-1).each do |row|
-   #   (0..2).each do |cell|
-   #     if cell.even? && row.even? || cell.odd? && row.odd?
-   #       @board[row][cell].content = Piece.new(:red)
-   #     end
-   #   end
-   # end
+     (0..@total_rows-1).each do |row|
+       (0..2).each do |cell|
+         if cell.even? && row.even? || cell.odd? && row.odd?
+           @board[row][cell].content = Piece.new(:red)
+         end
+       end
+     end
     (0..7).each do |row|
       (5..7).each do |cell|
         if cell.even? && row.even? || cell.odd? && row.odd?
@@ -390,7 +409,8 @@ class Board
         end
       end
     end
-   @board
+    self.save_state
+    @board
   end
 
 end
