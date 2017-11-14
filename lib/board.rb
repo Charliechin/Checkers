@@ -37,13 +37,6 @@ class Board
     nil
   end
 
-#  def jump_down_right(piece_row, piece_col)
-#    down = {row: piece_row + 1,column: piece_col + 1}
-#    to_coords = {row: down[:row], column: down[:column]}
-#    #delete_piece(piece_coords)
-#    movement(piece_coords,to_coords)
-#
-#  end
 
   def save_state
     @history << Marshal.load( Marshal.dump(self.board) )
@@ -51,45 +44,96 @@ class Board
     puts "movement saved"
   end
   
+
+def prompt_up_or_down_right(piece_row, piece_col)
+          prompt = "> "
+          puts "Up or down? --- (u/d) --- "
+          print prompt
+          while user_input = gets.chomp
+            if user_input == "u"
+              #check if king
+              if piece_col == @total_columns - 1
+              end
+              move_up_right(piece_row,piece_col)
+              break
+            elsif user_input == "d"
+              #check if king
+              move_down_right(piece_row,piece_col)
+              break
+            elsif user_input == ""
+              break
+            else
+              puts "Nope, Try with 'u' or 'd'"
+              puts ""
+              print "> "
+            end
+          end
+end
+
+
+
+
+def prompt_up_or_down_left(piece_row, piece_col)
+          prompt = "> "
+          puts "Up-left or Down-left? --- (ul/dl) --- "
+          print prompt
+          while user_input = gets.chomp
+            if user_input == "ul"
+              #check if king
+              if piece_col == @total_columns - 1
+              end
+              move_up_right(piece_row,piece_col)
+              break
+            elsif user_input == "dl"
+              #check if king
+              move_down_right(piece_row,piece_col)
+              break
+            elsif user_input == ""
+              puts "sometimes it's good to think about your next move! :)"
+              break
+            else
+              puts "Nope, Try with 'u' or 'd'"
+              puts ""
+              print "> "
+            end
+          end
+end
+
+
+
+
+
   def move_piece(piece_row,piece_col)
     piece = select_piece(piece_row,piece_col)
     piece.nil? ? (return nil) : piece
-    #check if where you want to move is blocked (can_move_up_right)
+    can_move_down_right =  can_move_down_right(piece_row,piece_col)
+    can_move_down_left =  can_move_down_left(piece_row,piece_col)
+    can_move_up_right   =  can_move_up_right(piece_row,piece_col)
+    can_move_up_left   =  can_move_up_left(piece_row,piece_col)
+
     case piece.color
     when :red
-      #CHECK IF THIS IS KING OR NOT
-      #from left to right of the board
-      can_move_down_right =  can_move_down_right(piece_row,piece_col)
-      can_move_up_right   =  can_move_up_right(piece_row,piece_col)
-      if can_move_up_right && !can_move_down_right
-        move_up_right(piece_row,piece_col)
-      elsif can_move_down_right && !can_move_up_right
-        move_down_right(piece_row,piece_col)
+      if piece.is_king? == false
 
-      elsif !can_move_down_right && !can_move_up_right
-      else
-        prompt = "> "
-        puts "Up or down? --- (u/d) --- "
-        print prompt
-        while user_input = gets.chomp
-          if user_input == "u"
-            #check if king
-            if piece_col == @total_columns - 1
-            end
-            move_up_right(piece_row,piece_col)
-            break
-          elsif user_input == "d"
-            #check if king
-            move_down_right(piece_row,piece_col)
-            break
-          else
-            puts "Nope, Try with 'u' or 'd'"
-            puts ""
-            print "> "
-          end
+        #from left to right of the board
+        if can_move_up_right && !can_move_down_right
+          move_up_right(piece_row,piece_col)
+        elsif can_move_down_right && !can_move_up_right
+          move_down_right(piece_row,piece_col)
+
+        elsif !can_move_down_right && !can_move_up_right
+        else
+          prompt_up_or_down_right(piece_row,piece_col)
         end
+        #if it's a king...
+      else
+        puts"where to?"
+       puts "row: "
+       prompt_row = gets.chomp.to_i
+       puts "col: "
+       prompt_column = gets.chomp.to_i
+        movement({row:piece_row, column:piece_col},{row:prompt_row, column:prompt_column})
       end
-
       print "\u{2714} ".colorize(:light_green)
       print "Moving piece".colorize(:green)
       print "[#{piece_row}][#{piece_col}]".colorize(:light_red)
@@ -97,34 +141,45 @@ class Board
       self.print_current_state
 
     when :black
-      #CHECK IF THIS IS KING OR NOT
       #from left to right of the board
+      can_move_down_right =  can_move_down_right(piece_row,piece_col)
       can_move_down_left =  can_move_down_left(piece_row,piece_col)
+      can_move_up_right   =  can_move_up_right(piece_row,piece_col)
       can_move_up_left   =  can_move_up_left(piece_row,piece_col)
-      if can_move_up_left && !can_move_down_left
-        move_up_left(piece_row,piece_col)
+      if piece.is_king? == false
+        if can_move_up_left && !can_move_down_left
+          move_up_left(piece_row,piece_col)
 
-      elsif can_move_down_left && !can_move_up_left
-        move_down_left(piece_row,piece_col)
+        elsif can_move_down_left && !can_move_up_left
+          move_down_left(piece_row,piece_col)
 
-      elsif !can_move_down_left && !can_move_up_left
-      else
-        prompt = "> "
-        puts "Up or down? --- (u/d) --- "
-        print prompt
-        while user_input = gets.chomp
-          if user_input == "u"
-            move_up_left(piece_row,piece_col)
-            break
-          elsif user_input == "d"
-            move_down_left(piece_row,piece_col)
-            break
-          else
-            puts "Nope, Try with 'up' or 'down'"
-            puts ""
-            print "> "
+        elsif !can_move_down_left && !can_move_up_left
+        else
+          prompt = "> "
+          puts "Up or down? --- (u/d) --- "
+          print prompt
+          while user_input = gets.chomp
+            if user_input == "u"
+              move_up_left(piece_row,piece_col)
+              break
+            elsif user_input == "d"
+              move_down_left(piece_row,piece_col)
+              break
+            else
+              puts "Nope, Try with 'up' or 'down'"
+              puts ""
+              print "> "
+            end
           end
         end
+        #if it's a king...
+      else
+        puts"where to?"
+        puts "row: "
+        prompt_row = gets.chomp.to_i
+        puts "col: "
+        prompt_column = gets.chomp.to_i
+        movement({row:piece_row, column:piece_col},{row:prompt_row, column:prompt_column})
       end
       print "\u{2714} ".colorize(:light_green)
       print "Moving piece".colorize(:green)
@@ -251,11 +306,10 @@ class Board
     down = {row: piece_coords[:row] + 1,column: piece_coords[:column] + 1}
     to = {row: piece_coords[:row] + 2,column: piece_coords[:column] + 2}
     #if the piece is in the bottom row and tries to move further down
-    if down[:row] > @total_rows-1
+    if down[:row] > @total_rows-1 || to[:column] > @total_columns
       print "\u{2716} ".colorize(:light_red)
       puts "Movement out of bounds".colorize(:red)
       return false
-
     elsif @board[down[:row]][down[:column]].is_empty?
       #to_coords = {row: down[:row], column: down[:column]}
       return true
@@ -300,6 +354,7 @@ class Board
     else
       print "\u{2716} ".colorize(:light_red)
       puts "down square is not free".colorize(:red)
+      self.print_current_state
       piece_from_color         = @board[piece_coords[:row]][piece_coords[:column]].content.color
       piece_to_color           = @board[down[:row]][down[:column]].content.color
       begin
@@ -310,7 +365,6 @@ class Board
       if piece_from_color != piece_to_color && space_to_move_after_jump.is_empty?
         delete_piece(down)
         movement(piece_coords, to)
-        print "\u{2716} ".colorize(:light_red)
         puts "Movement out of bounds".colorize(:red)
         return false
       end
@@ -339,6 +393,7 @@ class Board
       to_coords = {row: up[:row], column: up[:column]}
       return true
     else
+      self.print_current_state
       piece_from_color         = @board[piece_coords[:row]][piece_coords[:column]].content.color
       piece_to_color           = @board[up[:row]][up[:column]].content.color
       begin
@@ -372,6 +427,7 @@ class Board
       to_coords = {row: up[:row], column: up[:column]}
       return true
     else
+      self.print_current_state
       piece_from_color         = @board[piece_coords[:row]][piece_coords[:column]].content.color
       piece_to_color           = @board[up[:row]][up[:column]].content.color
       space_to_move_after_jump = @board[to[:row]][to[:column]]
@@ -402,13 +458,13 @@ class Board
   end
 
   def initial_state
-     (0..@total_rows-1).each do |row|
-       (0..2).each do |cell|
-         if cell.even? && row.even? || cell.odd? && row.odd?
-           @board[row][cell].content = Piece.new(:red)
-         end
-       end
-     end
+    # (0..@total_rows-1).each do |row|
+    #   (0..2).each do |cell|
+    #     if cell.even? && row.even? || cell.odd? && row.odd?
+    #       @board[row][cell].content = Piece.new(:red)
+    #     end
+    #   end
+    # end
     (0..7).each do |row|
       (5..7).each do |cell|
         if cell.even? && row.even? || cell.odd? && row.odd?
