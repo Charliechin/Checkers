@@ -58,7 +58,7 @@ while user_input = gets.chomp #loops while getting user input
   case user_input
   when "1"
 b = Board.new
-b.render
+# b.render
 #binding.pry
     player_vs_player
     break
