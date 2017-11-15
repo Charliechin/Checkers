@@ -16,20 +16,20 @@ puts " 3. CPU vs CPU"
 puts "---------------------------------"
 print prompt
 
-while user_input = gets.chomp #loops while getting user input
-  case user_input
-  when "1"
+# while user_input = gets.chomp #loops while getting user input
+#   case user_input
+#   when "1"
     b = Board.new
-    b.print_current_state
+    b.render
     binding.pry
-    break
-  when "2"
-    break
-  when "3"
-    break
-  when ""
-    puts "good bye! :("
-    break
-  end
-end
+  #   break
+  # when "2"
+  #   break
+  # when "3"
+  #   break
+  # when ""
+  #   puts "good bye! :("
+  #   break
+  # end
+# end
 
