@@ -2,8 +2,8 @@ class Board
   attr_accessor :board, :history, :undoArr, :redoArr
 
   def initialize
-    @total_rows = 8
-    @total_columns= 8
+    @total_rows = 6
+    @total_columns= 6
     @history = []
     @undoArr = []
     @redoArr = []
@@ -29,6 +29,204 @@ class Board
     piece = select_piece(piece_coords[:row],piece_coords[:column])
     enemy_piece = enemy_piece = select_piece(directions[direction][:row],directions[direction][:column])
     if piece.is_king?
+      if piece.color == :red
+        puts "ROJO, KING"
+        case direction
+        when :UR
+          #if the piece moves out of bounds, stop
+          if directions[:UR][:row] < 0 || directions[:UR][:column] >= @total_rows
+            return false
+            #if the place is empty, therefore the piece can move, move.
+          elsif @board[directions[:UR][:row]][directions[:UR][:column]].is_empty?
+
+            return true
+          else
+            if piece.color != enemy_piece.color
+              puts "ENEMY!!! YOU MUST JUMP!!!"
+              binding.pry
+              space_after_jump = @board[directions[direction][:row]-1][directions[direction][:column]+1]
+              if space_after_jump.is_empty?
+                jump_from({row:piece_coords[:row],column:piece_coords[:column]}, direction)
+                delete_piece({row:directions[direction][:row],column:directions[direction][:column]})
+              else
+                puts "THERE IS NO SPACE TO LAND, YOU ARE BLOCKED. ASK AGAIN"
+              end
+            else
+              puts "BUDDY HERE, you are blocked"
+            end
+          end
+        when :DR
+          #if the piece moves out of bounds, stop
+          if directions[:DR][:row] > @total_rows-1 || directions[:DR][:column] >= @total_rows
+            return false
+            #if the place is empty, therefore the piece can move, move.
+          elsif @board[directions[:DR][:row]][directions[:DR][:column]].is_empty?
+            return true
+          else
+            if piece.color != enemy_piece.color
+              puts "ENEMY!!! YOU MUST JUMP!!!"
+              space_after_jump = @board[directions[direction][:row]+1][directions[direction][:column]+1]
+              if space_after_jump.is_empty?
+                jump_from({row:piece_coords[:row],column:piece_coords[:column]}, direction)
+                delete_piece({row:directions[direction][:row],column:directions[direction][:column]})
+                binding.pry
+              else
+                puts "THERE IS NO SPACE TO LAND, YOU ARE BLOCKED. ASK AGAIN"
+              end
+            else
+              puts "BUDDY HERE, you are blocked"
+            end
+          end
+        when :DL
+          #if the piece moves out of bounds, stop
+          if directions[:DL][:row] > @total_rows-1 || directions[:DL][:column] < 0
+            return false
+            #if the place is empty, therefore the piece can move, move.
+          elsif @board[directions[:DL][:row]][directions[:DL][:column]].is_empty?
+            return true
+          else
+            if piece.color != enemy_piece.color
+              puts "ENEMY!!! YOU MUST JUMP!!!"
+              binding.pry
+              space_after_jump = @board[directions[direction][:row]+1][directions[direction][:column]-1]
+              if space_after_jump.is_empty?
+                jump_from({row:piece_coords[:row],column:piece_coords[:column]}, direction)
+                delete_piece({row:directions[direction][:row],column:directions[direction][:column]})
+              else
+                puts "THERE IS NO SPACE TO LAND, YOU ARE BLOCKED. ASK AGAIN"
+              end
+            else
+              puts "BUDDY HERE, you are blocked"
+            end
+
+          end
+        when :UL
+          #if the piece moves out of bounds, stop
+          if directions[:UL][:row] < 0 || directions[:UL][:column] < 0
+            return false
+            #if the place is empty, therefore the piece can move, move.
+          elsif @board[directions[:UL][:row]][directions[:UL][:column]].is_empty?
+            return true
+          else
+            if piece.color != enemy_piece.color
+              puts "ENEMY!!! YOU MUST JUMP!!!"
+              binding.pry
+              space_after_jump = @board[directions[direction][:row]-1][directions[direction][:column]-1]
+              if space_after_jump.is_empty?
+                jump_from({row:piece_coords[:row],column:piece_coords[:column]}, direction)
+                delete_piece({row:directions[direction][:row],column:directions[direction][:column]})
+              else
+                puts "THERE IS NO SPACE TO LAND, YOU ARE BLOCKED. ASK AGAIN"
+              end
+            else
+              puts "BUDDY HERE, you are blocked"
+            end
+
+          end
+        else
+          puts "YOU MUST BE A KING!"
+          return false
+        end
+      else
+        puts "Negro, KING"
+        case direction
+        when :UR
+          #if the piece moves out of bounds, stop
+          if directions[:UR][:row] < 0 || directions[:UR][:column] >= @total_rows
+            return false
+            #if the place is empty, therefore the piece can move, move.
+          elsif @board[directions[:UR][:row]][directions[:UR][:column]].is_empty?
+
+            return true
+          else
+            if piece.color != enemy_piece.color
+              puts "ENEMY!!! YOU MUST JUMP!!!"
+              binding.pry
+              space_after_jump = @board[directions[direction][:row]-1][directions[direction][:column]+1]
+              if space_after_jump.is_empty?
+                jump_from({row:piece_coords[:row],column:piece_coords[:column]}, direction)
+                delete_piece({row:directions[direction][:row],column:directions[direction][:column]})
+              else
+                puts "THERE IS NO SPACE TO LAND, YOU ARE BLOCKED. ASK AGAIN"
+              end
+            else
+              puts "BUDDY HERE, you are blocked"
+            end
+          end
+        when :DR
+          #if the piece moves out of bounds, stop
+          if directions[:DR][:row] > @total_rows-1 || directions[:DR][:column] >= @total_rows
+            return false
+            #if the place is empty, therefore the piece can move, move.
+          elsif @board[directions[:DR][:row]][directions[:DR][:column]].is_empty?
+            return true
+          else
+            if piece.color != enemy_piece.color
+              puts "ENEMY!!! YOU MUST JUMP!!!"
+              space_after_jump = @board[directions[direction][:row]+1][directions[direction][:column]+1]
+              if space_after_jump.is_empty?
+                jump_from({row:piece_coords[:row],column:piece_coords[:column]}, direction)
+                delete_piece({row:directions[direction][:row],column:directions[direction][:column]})
+                binding.pry
+              else
+                puts "THERE IS NO SPACE TO LAND, YOU ARE BLOCKED. ASK AGAIN"
+              end
+            else
+              puts "BUDDY HERE, you are blocked"
+            end
+          end
+        when :DL
+          #if the piece moves out of bounds, stop
+          if directions[:DL][:row] > @total_rows-1 || directions[:DL][:column] < 0
+            return false
+            #if the place is empty, therefore the piece can move, move.
+          elsif @board[directions[:DL][:row]][directions[:DL][:column]].is_empty?
+            return true
+          else
+            if piece.color != enemy_piece.color
+              puts "ENEMY!!! YOU MUST JUMP!!!"
+              binding.pry
+              space_after_jump = @board[directions[direction][:row]+1][directions[direction][:column]-1]
+              if space_after_jump.is_empty?
+                jump_from({row:piece_coords[:row],column:piece_coords[:column]}, direction)
+                delete_piece({row:directions[direction][:row],column:directions[direction][:column]})
+              else
+                puts "THERE IS NO SPACE TO LAND, YOU ARE BLOCKED. ASK AGAIN"
+              end
+            else
+              puts "BUDDY HERE, you are blocked"
+            end
+
+          end
+        when :UL
+          #if the piece moves out of bounds, stop
+          if directions[:UL][:row] < 0 || directions[:UL][:column] < 0
+            return false
+            #if the place is empty, therefore the piece can move, move.
+          elsif @board[directions[:UL][:row]][directions[:UL][:column]].is_empty?
+            return true
+          else
+            if piece.color != enemy_piece.color
+              puts "ENEMY!!! YOU MUST JUMP!!!"
+              binding.pry
+              space_after_jump = @board[directions[direction][:row]-1][directions[direction][:column]-1]
+              if space_after_jump.is_empty?
+                jump_from({row:piece_coords[:row],column:piece_coords[:column]}, direction)
+                delete_piece({row:directions[direction][:row],column:directions[direction][:column]})
+              else
+                puts "THERE IS NO SPACE TO LAND, YOU ARE BLOCKED. ASK AGAIN"
+              end
+            else
+              puts "BUDDY HERE, you are blocked"
+            end
+
+          end
+          
+        else
+          puts "You must be a King to do that!"
+          return false
+        end
+      end
     else
       if piece.color == :red
         puts "SOYR ROKJO NO KING"
@@ -84,7 +282,7 @@ class Board
         end
         binding.pry
       else
-        puts "SOY NEGRO NO KING"
+        puts "SOY black NO KING"
         case direction
         when :UL
           #if the piece moves out of bounds, stop

@@ -36,7 +36,7 @@ def player_turn(color,board)
    puts " ------ ------ ------\n"
    user_input = get_input
    user_movement = board.can_move_to?(user_input,user_input[:direction])
-binding.pry
+   binding.pry
    if user_movement
      board.move_from(user_input, user_input[:direction])
    end
