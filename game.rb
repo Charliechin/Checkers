@@ -17,9 +17,6 @@ puts "---------------------------------"
 print prompt
 
 
-def initialize
-  binding.pry
-end
 def get_input
   #outputs a hash where user wants to move
   #direction :UR :UL :DR :DL
@@ -38,7 +35,11 @@ def player_turn(color,board)
    puts "       #{color} turn!"
    puts " ------ ------ ------\n"
    user_input = get_input
-   board.move_from(user_input, user_input[:direction])
+   user_movement = board.can_move_to?(user_input,user_input[:direction])
+binding.pry
+   if user_movement
+     board.move_from(user_input, user_input[:direction])
+   end
 end
 
 def player_vs_player
@@ -56,7 +57,9 @@ end
 while user_input = gets.chomp #loops while getting user input
   case user_input
   when "1"
-
+b = Board.new
+b.render
+#binding.pry
     player_vs_player
     break
   when "2"

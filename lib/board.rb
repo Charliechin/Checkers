@@ -24,7 +24,14 @@ class Board
         :UL =>  {row: piece_coords[:row] - 1,column: piece_coords[:column] - 1},
         :DL =>  {row: piece_coords[:row] + 1,column: piece_coords[:column] - 1},
       }
-      case  direction
+
+      
+piece = select_piece(piece_coords[:row],piece_coords[:column])
+      if piece.is_king?
+      else
+       if piece.color == :red 
+        puts "SOYR ROKJO NO KING"
+        case direction
       when :UR
         #if the piece moves out of bounds, stop
         if directions[:UR][:row] < 0 || directions[:UR][:column] >= @total_rows
@@ -34,28 +41,8 @@ class Board
 
           return true
         else
-          #THIS else branch means that a piece has been found in the place where you want to move
-          #is it able to jump if color is different?
-          piece = select_piece(piece_coords[:row],piece_coords[:column])
-          enemy_piece = select_piece(directions[direction][:row],directions[direction][:column])
-          enemy_piece_coords = {row: directions[direction][:row], column: directions[direction][:column]}
-          after_jump_coords = {row: directions[direction][:row] -1 , column: directions[direction][:column] + 1}
-          begin
-            after_jump_is_empty = self.board[after_jump_coords[:row]][after_jump_coords[:column]].is_empty?
-          rescue
-            puts "OUT OF BOUNDS!"
-            return
-          end
+                    return "something found"
 
-          if after_jump_coords[:row] >= 0 && after_jump_coords[:column] < @total_columns && after_jump_is_empty
-            #it is safe to jump here
-            #after_jump, try deleting the enemy piece
-            jump_to(piece_coords,:UR)
-            delete_piece(enemy_piece_coords)
-          else
-            puts "YOU CANNOT MOVE!"
-            nil
-          end
         end
       when :DR
         #if the piece moves out of bounds, stop
@@ -65,30 +52,16 @@ class Board
         elsif @board[directions[:DR][:row]][directions[:DR][:column]].is_empty?
           return true
         else
-          binding.pry
-          #THIS else branch means that a piece has been found in the place where you want to move
-          #is it able to jump if color is different?
-          piece = select_piece(piece_coords[:row],piece_coords[:column])
-          enemy_piece = select_piece(directions[direction][:row],directions[direction][:column])
-          enemy_piece_coords = {row: directions[direction][:row], column: directions[direction][:column]}
-          after_jump_coords = {row: directions[direction][:row] +1 , column: directions[direction][:column] + 1}
-          begin
-            after_jump_is_empty = self.board[after_jump_coords[:row]][after_jump_coords[:column]].is_empty?
-          rescue
-            puts "OUT OF BOUNDS!"
-            return
-          end
-          #if something weird happen, try after_jump_coords[:row] < @total_rows-1
-          if after_jump_coords[:row] < @total_rows && after_jump_coords[:column] < @total_columns && after_jump_is_empty
-            #it is safe to jump here
-            #after_jump, try deleting the enemy piece
-            jump_to(piece_coords,:DR)
-            delete_piece(enemy_piece_coords)
-          else
-            puts "YOU CANNOT MOVE!"
-            nil
-          end
+return "something found"
         end
+        else
+          puts "YOU MUST BE A KING!"
+          return false
+        end
+        binding.pry
+       else
+        puts "SOY NEGRO NO KING"
+        case direction
       when :UL
         #if the piece moves out of bounds, stop
         if directions[:UL][:row] < 0 || directions[:UL][:column] < 0
@@ -97,32 +70,7 @@ class Board
         elsif @board[directions[:UL][:row]][directions[:UL][:column]].is_empty?
           return true
         else
-          #THIS else branch means that a piece has been found in the place where you want to move
-          #is it able to jump if color is different?
-
-
-
-          piece = select_piece(piece_coords[:row],piece_coords[:column])
-          enemy_piece = select_piece(directions[direction][:row],directions[direction][:column])
-          enemy_piece_coords = {row: directions[direction][:row], column: directions[direction][:column]}
-          after_jump_coords = {row: directions[direction][:row] -1 , column: directions[direction][:column] - 1}
-          begin
-            after_jump_is_empty = self.board[after_jump_coords[:row]][after_jump_coords[:column]].is_empty?
-          rescue
-            puts "OUT OF BOUNDS!"
-            return
-          end
-          if after_jump_coords[:row] >= 0 && after_jump_coords[:column] < @total_columns && after_jump_is_empty
-            #it is safe to jump here
-            #after_jump, try deleting the enemy piece
-            jump_to(piece_coords,:UL)
-            delete_piece(enemy_piece_coords)
-          else
-
-            puts "YOU CANNOT MOVE!"
-            nil
-
-          end
+          return "something found"
 
         end
       when :DL
@@ -133,30 +81,85 @@ class Board
         elsif @board[directions[:DL][:row]][directions[:DL][:column]].is_empty?
           return true
         else
-          #THIS else branch means that a piece has been found in the place where you want to move
-          #is it able to jump if color is different?
-          piece = select_piece(piece_coords[:row],piece_coords[:column])
-          enemy_piece = select_piece(directions[direction][:row],directions[direction][:column])
-          enemy_piece_coords = {row: directions[direction][:row], column: directions[direction][:column]}
-          after_jump_coords = {row: directions[direction][:row] +1 , column: directions[direction][:column] - 1}
-          begin
-            after_jump_is_empty = self.board[after_jump_coords[:row]][after_jump_coords[:column]].is_empty?
-          rescue
-            puts "OUT OF BOUNDS!"
-            return
-          end
+                    return "something found"
 
-          if after_jump_coords[:row] > 0 && after_jump_coords[:column] > 0 && after_jump_is_empty
-            #it is safe to jump here
-            #after_jump, try deleting the enemy piece
-            binding.pry
-            jump_to(piece_coords,:DL)
-            delete_piece(enemy_piece_coords)
-          else
-            puts "YOU CANNOT MOVE!"
-          end
         end
+        else
+          puts "YOU MUST BE A KING!"
+          return false
+       end
+     end
       end
+
+
+      # case  direction
+      # when :UR
+      #   #if the piece moves out of bounds, stop
+      #   if directions[:UR][:row] < 0 || directions[:UR][:column] >= @total_rows
+      #     return false
+      #     #if the place is empty, therefore the piece can move, move.
+      #   elsif @board[directions[:UR][:row]][directions[:UR][:column]].is_empty?
+
+      #     return true
+      #   else
+      #               return "something found"
+
+      #   end
+      # when :DR
+      #   #if the piece moves out of bounds, stop
+      #   if directions[:DR][:row] > @total_rows-1 || directions[:DR][:column] >= @total_rows
+      #     return false
+      #     #if the place is empty, therefore the piece can move, move.
+      #   elsif @board[directions[:DR][:row]][directions[:DR][:column]].is_empty?
+      #     return true
+      #   else
+      #       #   binding.pry
+      #       #   #THIS else branch means that a piece has been found in the place where you want to move
+      #       #   #is it able to jump if color is different?
+      #       #   piece = select_piece(piece_coords[:row],piece_coords[:column])
+      #       #   enemy_piece = select_piece(directions[direction][:row],directions[direction][:column])
+      #       #   enemy_piece_coords = {row: directions[direction][:row], column: directions[direction][:column]}
+      #       #   after_jump_coords = {row: directions[direction][:row] +1 , column: directions[direction][:column] + 1}
+      #       #   begin
+      #       #     after_jump_is_empty = self.board[after_jump_coords[:row]][after_jump_coords[:column]].is_empty?
+      #       #   rescue
+      #       #     puts "OUT OF BOUNDS!"
+      #       #     return
+      #       #   end
+      #       #   #if something weird happen, try after_jump_coords[:row] < @total_rows-1
+      #       #   if after_jump_coords[:row] < @total_rows && after_jump_coords[:column] < @total_columns && after_jump_is_empty
+      #       #     #it is safe to jump here
+      #       #     #after_jump, try deleting the enemy piece
+      #       #     jump_to(piece_coords,:DR)
+      #       #     delete_piece(enemy_piece_coords)
+      #       #   else
+      #       #     puts "YOU CANNOT MOVE!"
+      #       #     nil
+      #       #   end
+      #   end
+      # when :UL
+      #   #if the piece moves out of bounds, stop
+      #   if directions[:UL][:row] < 0 || directions[:UL][:column] < 0
+      #     return false
+      #     #if the place is empty, therefore the piece can move, move.
+      #   elsif @board[directions[:UL][:row]][directions[:UL][:column]].is_empty?
+      #     return true
+      #   else
+      #     return "something found"
+
+      #   end
+      # when :DL
+      #   #if the piece moves out of bounds, stop
+      #   if directions[:DL][:row] > @total_rows-1 || directions[:DL][:column] < 0
+      #     return false
+      #     #if the place is empty, therefore the piece can move, move.
+      #   elsif @board[directions[:DL][:row]][directions[:DL][:column]].is_empty?
+      #     return true
+      #   else
+      #               return "something found"
+
+      #   end
+      # end
   end
 
   def render
@@ -199,7 +202,7 @@ class Board
       self.render
       puts "redo completed... you cheater!"
   end
-
+# move stuff
   def move_from(piece_coords={}, direction)
       #piece_coords: Hash with values :row, :column i.e. piece_coords={row:0,column:1}
       #   direction: Symbol with positions to move i.e. ":UR" (up right), ":DR" (down right)
@@ -220,7 +223,6 @@ class Board
 
       self.render
       return true
-
   end
 
 
@@ -245,6 +247,7 @@ class Board
       return true
   end
 
+# move stuff
 
 
   def save_state
