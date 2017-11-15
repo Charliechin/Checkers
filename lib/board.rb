@@ -121,9 +121,9 @@ class Board
       #from left to right of the board
 
       if can_move_to?(piece_coords,:UR) && !can_move_to?(piece_coords,:DR)
-        move_up_right(piece_row,piece_col)
+        move_to(piece_coords,:UR)
       elsif can_move_to?(piece_coords,:DR) && !can_move_to?(piece_coords,:UR)
-        move_down_right(piece_row,piece_col)
+        move_to(piece_coords,:DR)
 
       else
         prompt = "> "
@@ -134,11 +134,11 @@ class Board
             #check if king
             if piece_col == @total_columns - 1
             end
-            move_up_right(piece_row,piece_col)
+            move_to(piece_coords,:UR)
             break
           elsif user_input == "d"
             #check if king
-            move_down_right(piece_row,piece_col)
+            move_to(piece_coords,:DR)
             break
           else
             puts "Nope, Try with 'u' or 'd'"
@@ -159,10 +159,10 @@ class Board
       #from left to right of the board
 
       if can_move_to?(piece_coords,:UL) && !can_move_to?(piece_coords,:DL)
-        move_up_left(piece_row,piece_col)
+        move_to(piece_coords, :UL)
 
       elsif can_move_to?(piece_coords,:DL) && !can_move_to?(piece_coords,:UL)
-        move_down_left(piece_row,piece_col)
+        move_to(piece_coords, :DL)
 
       else
         prompt = "> "
@@ -170,10 +170,10 @@ class Board
         print prompt
         while user_input = gets.chomp
           if user_input == "u"
-            move_up_left(piece_row,piece_col)
+            move_to(piece_coords,:UL)
             break
           elsif user_input == "d"
-            move_down_left(piece_row,piece_col)
+            move_to(piece_coords,:DL)
             break
           else
             puts "Nope, Try with 'up' or 'down'"
@@ -195,56 +195,7 @@ class Board
     end
   end
   #red, no king
-  def move_down_right(pos_row,pos_col)
-    down = {row: pos_row + 1,column: pos_col + 1}
-    piece_coords = {row: pos_row, column: pos_col}
-    to_coords = {row: down[:row], column: down[:column]}
-    if to_coords[:column] == @total_columns - 1
-      piece = select_piece(piece_coords[:row],piece_coords[:column])
-      piece.make_king
-    end
-    self.save_state
-    movement(piece_coords,to_coords)
-  end
-  def move_up_right(pos_row,pos_col)
-    up   = {row: pos_row - 1,column: pos_col + 1}
-    piece_coords = {row: pos_row, column: pos_col}
-    to_coords = {row: up[:row], column: up[:column]}
-    #Check if piece is in the last column. If so, make it king
-    if to_coords[:column] == @total_columns - 1
-      piece = select_piece(piece_coords[:row],piece_coords[:column])
-      piece.make_king
-    end
-    self.save_state
-    movement(piece_coords,to_coords)
-  end
-  #black, no king
 
-  def move_down_left(pos_row,pos_col)
-    down = {row: pos_row + 1,column: pos_col - 1}
-    piece_coords = {row: pos_row, column: pos_col}
-    to_coords = {row: down[:row], column: down[:column]}
-    #Check if piece is in the last column. If so, make it king
-    if to_coords[:column] == 0
-      piece = select_piece(piece_coords[:row],piece_coords[:column])
-      piece.make_king
-    end
-    self.save_state
-    movement(piece_coords,to_coords)
-  end
-
-  def move_up_left(pos_row,pos_col)
-    up   = {row: pos_row - 1,column: pos_col - 1}
-    piece_coords = {row: pos_row, column: pos_col}
-    to_coords = {row: up[:row], column: up[:column]}
-    #Check if piece is in the last column. If so, make it king
-    if to_coords[:column] == 0
-      piece = select_piece(piece_coords[:row],piece_coords[:column])
-      piece.make_king
-    end
-    self.save_state
-    movement(piece_coords,to_coords)
-  end
   #!black, no king
 
 
@@ -263,10 +214,28 @@ class Board
     self.print_current_state
     puts "redo completed... you cheater!"
   end
+  def move_to(piece_coords={}, direction)
+#piece_coords: Hash with values :row, :column i.e. piece_coords={row:0,column:1}
+#   direction: Symbol with positions to move i.e. ":UR" (up right), ":DR" (down right)
+#returns void
+# assumes you are passing a valid piece
 
-  private
+# TODO!!!! !!! !! IMPORTANT!!!
+# turns into king the piece passed if reaches the beginning or end of the board
 
-  def select_piece(row,column)
+directions = {
+  :UR =>  {row: piece_coords[:row] - 1,column: piece_coords[:column] + 1},
+  :DR =>  {row: piece_coords[:row] + 1,column: piece_coords[:column] + 1},
+  :UL =>  {row: piece_coords[:row] - 1,column: piece_coords[:column] - 1},
+  :DL =>  {row: piece_coords[:row] + 1,column: piece_coords[:column] - 1},
+}
+self.save_state
+return movement(piece_coords, directions[direction])
+end
+
+private
+
+def select_piece(row,column)
     # select a piece given coords
     # returns  Piece object
     # returns nil if not found
@@ -303,11 +272,7 @@ class Board
     @board[ piece_coords[:row] ][ piece_coords[:column]  ].content = "x"
   end
 
-
-
-
-
-  def initialize_new_board
+   def initialize_new_board
     # This method will be called everytime a Board instance is generated
     @board.each_with_index do |row,i|
       row.each_with_index do |column,j|
