@@ -19,8 +19,8 @@ print prompt
 while user_input = gets.chomp #loops while getting user input
   case user_input
   when "1"
-    board_obj = Board.new(1)
-    board_obj.print_current_state
+    b = Board.new
+    b.print_current_state
     binding.pry
     break
   when "2"
