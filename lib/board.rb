@@ -213,7 +213,6 @@ class Board
         :DL =>  {row: piece_coords[:row] + 1,column: piece_coords[:column] - 1},
       }
       self.save_state
-      binding.pry
       piece_from = @board[ piece_coords[:row] ][ piece_coords[:column] ]
       piece_to   =  @board[directions[direction][:row]][directions[direction][:column]]
       piece_to.content = Marshal.load( Marshal.dump(piece_from.content) )
