@@ -2,8 +2,8 @@ class Board
   attr_accessor :board, :history, :undoArr, :redoArr
 
   def initialize
-      @total_rows = 8
-      @total_columns= 8
+      @total_rows = 4
+      @total_columns= 4
       @history = []
       @undoArr = []
       @redoArr = []
@@ -220,6 +220,14 @@ return "something found"
       piece_to   =  @board[directions[direction][:row]][directions[direction][:column]]
       piece_to.content = Marshal.load( Marshal.dump(piece_from.content) )
       piece_from.content = "x"
+      
+      if piece_to.content.color == :red && piece_to.content.is_king? == false && directions[direction][:column] == @total_columns-1
+        piece_to.content.make_king
+      end
+      binding.pry
+      if piece_to.content.color == :black && piece_to.content.is_king? == false && directions[direction][:column] == 0
+        piece_to.content.make_king
+      end
 
       self.render
       return true
@@ -300,17 +308,17 @@ return "something found"
 
   def initial_state
       #0 .. total_rows-1
-      (0..@total_rows-1).each do |row|
-        #0...2
-        (0..2).each do |cell|
-          if cell.even? && row.even? || cell.odd? && row.odd?
-            @board[row][cell].content = Piece.new(:red)
-          end
-        end
-      end
+      # (0..@total_rows-1).each do |row|
+      #   #0...2
+      #   (0..2).each do |cell|
+      #     if cell.even? && row.even? || cell.odd? && row.odd?
+      #       @board[row][cell].content = Piece.new(:red)
+      #     end
+      #   end
+      # end
       (0..@total_rows-1).each do |row|
         # 5...    -1
-        (5..@total_rows-1).each do |cell|
+        (3..@total_rows-1).each do |cell|
           if cell.even? && row.even? || cell.odd? && row.odd?
             @board[row][cell].content = Piece.new(:black)
           end
