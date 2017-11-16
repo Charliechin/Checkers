@@ -1,3 +1,0 @@
-class Helper
-  # module?
-end
