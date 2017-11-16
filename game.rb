@@ -11,8 +11,6 @@ prompt = "> "
 puts "        Choose an option!"
 puts "---------------------------------"
 puts " 1. Player vs Player"
-puts " 2. Player vs CPU"
-puts " 3. CPU vs CPU"
 puts "---------------------------------"
 print prompt
 
@@ -28,6 +26,7 @@ def get_input
   direction = gets.chomp
   result = {row: row.to_i, column: column.to_i, direction: direction.upcase.to_sym}
   return result
+
 end
 
 def player_turn(color,board)
@@ -36,7 +35,6 @@ def player_turn(color,board)
    puts " ------ ------ ------\n"
    user_input = get_input
    user_movement = board.can_move_to?(user_input,user_input[:direction])
-   binding.pry
    if user_movement
      board.move_from(user_input, user_input[:direction])
    end
