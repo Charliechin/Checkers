@@ -9,7 +9,8 @@ The game follows the standard rules of Checkers, except for the rule that requir
 + Enter a piece's location and direction (UR-Up right,UL- Up left,DR- Down right,DL - Down left)
 + To undo/redo, at the end of the turn you will be prompted. Type undo or redo. If not, type exit
 + To quit press Ctrl + c
-#### Notes
+#### Dependencies
 + In order to see the colors, please install the [colorize gem][colorize]
-
++ To undo/redo, please install the [pry gem][pry]
 [colorize]: https://github.com/fazibear/colorize
+[pry]: https://github.com/pry/pry
