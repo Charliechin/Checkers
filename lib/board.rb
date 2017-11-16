@@ -27,7 +27,7 @@ class Board
 
 
     piece = select_piece(piece_coords[:row],piece_coords[:column])
-    enemy_piece = enemy_piece = select_piece(directions[direction][:row],directions[direction][:column])
+    enemy_piece = select_piece(directions[direction][:row],directions[direction][:column])
     if piece.is_king?
       if piece.color == :red
         #If player 1 piece is a king and red
@@ -438,7 +438,7 @@ class Board
     self.render
     puts "redo completed... you cheater!"
   end
-  
+
   private
 
 
@@ -448,12 +448,8 @@ class Board
     # returns nil if not found
 
     if @board[row][column].is_empty?
-      print "\u{2716} ".colorize(:light_red)
-      puts "not a piece".colorize(:red)
       return nil
     else
-      print "\u{2714} ".colorize(:light_green)
-      puts "Piece chosen".colorize(:green)
       piece = @board[row][column].content
       return piece
     end

@@ -40,6 +40,11 @@ def player_turn(color,board)
    end
 end
 
+def undo_redo(board)
+
+ binding.pry
+end
+
 def player_vs_player
   b = Board.new
   playing = true
@@ -47,6 +52,12 @@ def player_vs_player
     b.render
     player_turn("Red",b)
     player_turn("Blue",b)
+      puts "type board.undo to undo movement"
+  puts "type board.redo to redo movement"
+  puts "--------------------------------"
+  puts "type exit to continue"
+    sleep 0.7
+    undo_redo(b)
   end
 end
 
